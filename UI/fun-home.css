@@ -1,5 +1,5 @@
 #flipkart-navbar {
-    background-color: #222222;
+    background-color: #4267b2;
     color: #FFFFFF;
 }
 
@@ -170,14 +170,15 @@ ul.tileMe {
 ul.tileMe li {
     width:70vw;
     display: inline-block;
-    padding: 16px;
-    margin: 0 0 5vw 5vw;
+    padding: 6px;
+    margin: 0 0 1vw 1vw;
+    margin-left: 5vw;
 
     border: 1px solid #ddd;
     font-size: 6px;
     font-size: 1rem;
     vertical-align: top;
-    box-shadow: 0 0 5px #ddd;
+    box-shadow: 0 0 1px #ddd;
 
 
 }

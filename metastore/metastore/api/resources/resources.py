@@ -31,15 +31,49 @@ from tastypie.resources import ALL, ALL_WITH_RELATIONS
 from tastypie.paginator import Paginator
 from django.http import HttpResponse
 from tastypie import fields
-
-
+from tastypie.authorization import Authorization
+from tastypie.authentication import Authentication
+import requests
 from tastypie.resources import Resource
 #import youtube-dl
 import subprocess
-
+import urllib
+import urllib2
+from bs4 import BeautifulSoup
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
-
+servers = {
+            1: "fzaqn",
+            2: "agobe",
+            3: "topsa",
+            4: "hcqwb",
+            5: "gdasz",
+            6: "iooab",
+            7: "idvmg",
+            8: "bjtpp",
+            9: "sbist",
+            10: "gxgkr",
+            11: "njmvd",
+            12: "trciw",
+            13: "sjjec",
+            14: "puust",
+            15: "ocnuq",
+            16: "qxqnh",
+            17: "jureo",
+            18: "obdzo",
+            19: "wavgy",
+            20: "qlmqh",
+            21: "avatv",
+            22: "upajk",
+            23: "tvqmt",
+            24: "xqqqh",
+            25: "xrmrw",
+            26: "fjhlv",
+            27: "ejtbn",
+            28: "urynq",
+            29: "tjljs",
+            30: "ywjkg"
+        }
 class dict2obj(object):
     """
     Convert dictionary to object
@@ -56,45 +90,6 @@ class dict2obj(object):
         return value
 
 
-
-
-class BaseModelResource(ModelResource):
-    class Meta:
-        allowed_methods = ['get', 'post', 'put']
-        always_return_data = True
-
-    def determine_format(self, request):
-        format = request.GET.get('format', 'json')
-        if format in self._meta.serializer.formats:
-            return self._meta.serializer.get_mime_for_format(format)
-        return super(BaseModelResource, self).determine_format(request)
-
-    def hydrate(self, bundle):
-        if bundle.request.method == "POST":
-            bundle.data['created_by'] = bundle.request.user.ldap_id
-        elif bundle.request.method == "PUT":
-            bundle.data['modified_by'] = bundle.request.user.ldap_id
-        return bundle
-
-    @classmethod
-    def get_fields(cls, fields=None, excludes=None):
-        """
-        Unfortunately we must override this method because tastypie ignores 'blank' attribute
-        on model fields.
-        Here we invoke an insane workaround hack due to metaclass inheritance issues:
-            http://stackoverflow.com/questions/12757468/invoking-super-in-classmethod-called-from-metaclass-new
-        """
-        this_class = next(c for c in cls.__mro__ if c.__module__ == __name__ and c.__name__ == 'BaseModelResource')
-        fields = super(this_class, cls).get_fields(fields=fields, excludes=excludes)
-        if not cls._meta.object_class:
-            return fields
-        for django_field in cls._meta.object_class._meta.fields:
-            if django_field.blank == True:
-                res_field = fields.get(django_field.name, None)
-                if res_field:
-                    res_field.blank = True
-        return fields
-
 import urllib
 class PageNumberPaginator(Paginator):
     def page(self):
@@ -102,8 +97,11 @@ class PageNumberPaginator(Paginator):
         output['page_number'] = int(self.offset / self.limit) + 1
         return output
 
-class VideosResource(BaseModelResource):
-    class Meta(BaseModelResource.Meta):
+class VideosResource(ModelResource):
+    class Meta:
+        allowed_methods = ['get', 'post', 'put']
+        authentication = Authentication()
+        authorization = Authorization()
         queryset = Videos.objects.all()
         limit = 4
         resource_name = 'videos'
@@ -114,15 +112,10 @@ class VideosResource(BaseModelResource):
         }
         paginator_class = Paginator
 
-
-
-
-
-
-
     def test_download_url(self,url):
-        result = True
+        result = False
         if urllib.urlopen(url).getcode()==200:
+            print 200
             result = True
         return result
 
@@ -131,28 +124,79 @@ class VideosResource(BaseModelResource):
         if not self.test_download_url(url):
             p = subprocess.Popen(["youtube-dl", "-g",bundle.data['video_url']], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             out, err = p.communicate()
+            # video = Videos.objects.get(id=bundle.data['id'])
+            # video.download_url=out
+            # video.save()
             bundle.data['download_url']= out
         return bundle
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class DownloadResource(Resource):
     d_url = fields.CharField(attribute='d_url')
+    m_url = fields.CharField(attribute='m_url')
+    url = fields.CharField(attribute='url')
     class Meta:
         resource_name = 'down'
         allowed_method = ['get']
     def obj_get_list(self, bundle, **kwargs):
         yt_yrl = bundle.request.GET['yt_url']
-
+        textToSearch = yt_yrl
+        query = urllib.quote(textToSearch)
+        url = "https://www.youtube.com/results?search_query=" + query
+        response = urllib2.urlopen(url)
+        html = response.read()
+        soup = BeautifulSoup(html)
         posts = []
-        #your actual logic to retrieve contents from external source.
-        p = subprocess.Popen(["youtube-dl", "-g",yt_yrl], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        out, err = p.communicate()
-        #example
-        posts.append(dict2obj(
-            {
-                'd_url': out,
-            }
-        ))
-
+        count =0
+        for vid in soup.findAll(attrs={'class':'yt-uix-tile-link'}):
+            if '/watch' in (vid['href']):
+                count =count+1
+                url = 'https://www.youtube.com' + (vid['href']).split("&")[0]
+                check_url = 'https://d.yt-downloader.org/check.php?/f=mp3&v='+(vid['href']).split("&")[0].split("v=")[1]
+                print check_url
+                response = requests.get(check_url)
+                response=json.loads(response.content)
+                print response
+                m_url ='http://' + servers[int(response['sid'])] + '.yt-downloader.org/download.php?id=' + response['hash']
+                print m_url
+                p = subprocess.Popen(["youtube-dl", "-g",url], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                out, err = p.communicate()
+        #
+                posts.append(dict2obj(
+                {
+                    'd_url': out,
+                    'm_url':m_url,
+                    'url':url
+                }))
+            if count==1:
+                break
 
         return posts
 

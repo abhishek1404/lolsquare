@@ -3,7 +3,7 @@
 
 
 body {
-    background-color: #000;
+    background-color: #4267b2;
     background-attachment: fixed;
     background-size: cover;
     background-position: 50% 50%;
@@ -279,7 +279,7 @@ and (max-width : 1199px) {
 
 
 .copyright {
-    background: rgba( 0, 0, 0, 0.7);
+    background: #4267b2;
     color: #fff;
     padding-top: 20px;
     padding-bottom: 20px;
