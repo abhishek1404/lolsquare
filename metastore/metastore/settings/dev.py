@@ -62,20 +62,7 @@ ROOT_URLCONF = 'metastore.urls'
 
 WSGI_APPLICATION = 'metastore.wsgi.application'
 
-'''
-CACHES = {
-    'old_default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/tmp/test_cache',
-        'TIMEOUT': 1,
-    },
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-        'TIMEOUT': 2,
-    },
-}
-'''
+
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -121,73 +108,8 @@ STATIC_ROOT = '/opt/mkhoj/libexec/static/'
 
 app_name = 'metastore'
 
-
-# Logging
-log_file = '/opt/mkhoj/logs/' + app_name + '/access.log'
-LOGFILE_PATH = log_file if os.path.exists(log_file) else '%s.access.log' % app_name
-LOGFILE_SIZE = 200 * 1024 * 1024  # 200M
-LOGFILE_COUNT = 5
-METASTORE_LOGFILE_PATH = '/opt/mkhoj/logs/metastore.log'
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-
-    },
-    'filters': {
-    },
-    'handlers': {
-        'null': {
-            'level': 'DEBUG',
-            'class': 'logging.NullHandler',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOGFILE_PATH,
-            'maxBytes': LOGFILE_SIZE,
-            'backupCount': LOGFILE_COUNT,
-            'formatter': 'verbose',
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
-
-
-    },
-    'loggers': {
-        # '': {
-        #     'handlers': ['console'],
-        #     'level': 'DEBUG',
-        #     'propagate': True
-        # },
-        'django': {
-            'handlers': ['file'],
-            'propagate': True,
-        },
-        'django.request': {
-            'handlers': ['file'],
-            'propagate': False,
-        },
-
-    },
-}
-
 GRAPPELLI_ADMIN_TITLE = 'metastore'
 GRAPPELLI_AUTOCOMPLETE_LIMIT = 5
 GRAPPELLI_CLEAN_INPUT_TYPES = True
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    # 'django_auth_ldap.backend.LDAPBackend',
-)
 
 

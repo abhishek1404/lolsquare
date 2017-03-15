@@ -14,7 +14,7 @@ function search_api(arg,query) {
 
 
                              var current = '<li><div class="date"><h4>'
-                             +'Title:'+item_list[step]['video_title']+'</dic><iframe  style="width:66vw; height:40vw; auto;" src="https://www.youtube.com/embed/'+id+'?modestbranding=1&amp;showinfo=0&amp;rel=0" frameborder="0" allowfullscreen><a><img src="https://img.youtube.com/vi/'+id+'/hqdefault.jpg" style="cursor:pointer"></a></iframe><div class="date"><h4>Views:'+item_list[step]['views']+
+                             +'Title:'+item_list[step]['video_title']+'</dic><iframe  style="width:66vw; height:40vw; auto;" src=\"https://www.youtube.com/embed/'+id+'\"  frameborder="0" allowfullscreen><a><img src="https://img.youtube.com/vi/'+id+'/hqdefault.jpg" style="cursor:pointer"></a></iframe><div class="date"><h4>Views:'+item_list[step]['views']+
                              '<a style= "padding-left: 36em;" download='+item_list[step]['download_url']+'href='+item_list[step]['download_url']+'><span  class="glyphicon glyphicon-download">Download</span></a></h4></div></li>';
 
 

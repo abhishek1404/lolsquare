@@ -92,17 +92,17 @@ function download  (url) {
                              var current = '<video  style="width:50vw; margin-bottom: 30px; height:30vw; auto;" controls poster="https://img.youtube.com/vi/'+video_id+'/sddefault.jpg"><source src='+d_url+' type="video/mp4"></video><a  href='+m_url+' ><font color="white">Download MP3</font></a>';
 
                             test=current+test;
-$(".download-buttom").html(test);
+
 
 //  }
 //});
+$(".download-buttom").html(test);
 
 
 
 
 
 }
-
 
 
                      },
@@ -115,6 +115,7 @@ $(".download-buttom").html(test);
 
 
          }
+
 
 $("#nav-search-bar").click(function() {
 query = document.getElementById("input").value;
